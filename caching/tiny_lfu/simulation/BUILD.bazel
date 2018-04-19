@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["simulation.go"],
+    importpath = "hack.systems/util/caching/tiny_lfu/simulation",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//caching/tiny_lfu:go_default_library",
+        "@hack_systems_random//armnod:go_default_library",
+        "@hack_systems_random//guacamole:go_default_library",
+    ],
+)
+
+go_binary(
+    name = "simulation",
+    embed = [":go_default_library"],
+    visibility = ["//visibility:public"],
+)

@@ -22,3 +22,9 @@ go_repository(
     importpath = "github.com/stretchr/testify",
     commit = "12b6f73e6084dad08a7c6e575284b177ecafbc71",
 )
+
+go_repository(
+    name = "hack_systems_random",
+    importpath = "hack.systems/random",
+    commit = "375ac8fcba621e02b3c27e4aa6e62fe8b6abc838",
+)
