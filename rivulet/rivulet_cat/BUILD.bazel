@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["rivulet_cat.go"],
+    importpath = "hack.systems/util/rivulet/rivulet_cat",
+    visibility = ["//visibility:private"],
+    deps = ["//rivulet:go_default_library"],
+)
+
+go_binary(
+    name = "rivulet_cat",
+    embed = [":go_default_library"],
+    visibility = ["//visibility:public"],
+)
