@@ -1,0 +1,21 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["map.go"],
+    importpath = "hack.systems/util/lockfree",
+    visibility = ["//visibility:public"],
+    deps = ["//assert:go_default_library"],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "map_test.go",
+    ],
+    embed = [":go_default_library"],
+    deps = [
+        "@com_github_stretchr_testify//require:go_default_library",
+        "@hack_systems_random//guacamole:go_default_library",
+    ],
+)
