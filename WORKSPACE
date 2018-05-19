@@ -26,5 +26,5 @@ go_repository(
 go_repository(
     name = "hack_systems_random",
     importpath = "hack.systems/random",
-    commit = "375ac8fcba621e02b3c27e4aa6e62fe8b6abc838",
+    commit = "bc2ef684474918d9dd6b6a7865c8b242f309f6ec",
 )
