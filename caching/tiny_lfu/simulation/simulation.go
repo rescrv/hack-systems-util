@@ -3,11 +3,12 @@ package main
 import (
 	"container/list"
 	"flag"
-	"fmt"
 
 	"hack.systems/random/armnod"
 	"hack.systems/random/guacamole"
+
 	"hack.systems/util/caching/tiny_lfu"
+	"hack.systems/util/ubench"
 )
 
 type cache interface {
@@ -20,25 +21,25 @@ type cache interface {
 
 type parameters struct {
 	// Workload generation
-	Operations uint64
-	ReadRatio  float64
-	Objects    uint64
-	ZipfTheta  float64
-	Seed       uint64
+	Operations uint64  `number of cache operations to perform`
+	ReadRatio  float64 `probability of an operation being a read`
+	Objects    uint64  `number of cacheable objects`
+	ZipfTheta  float64 `theta parameter to zipf distribution`
+	Seed       uint64  `guacamole seed`
 	// TinyLFU configuration
 	UseTLFU bool
-	Memory  uint64
-	Space   uint64
+	Memory  uint64 `memory parameter to TinyLFU`
+	Space   uint64 `space parameter to TinyLFU`
 	// Cache configuration
-	Algorithm string
-	CacheSize uint64
+	Algorithm string `cache eviction algorithm to simulate`
+	CacheSize uint64 `objects that can fit in cache`
 }
 
 type result struct {
-	Reads   uint64
-	Hits    uint64
-	Inserts uint64
-	Writes  uint64
+	Reads   uint64 `number of read operations performed`
+	Hits    uint64 `number of cache hits`
+	Inserts uint64 `number of cache misses that populated the entry`
+	Writes  uint64 `number of writes/invalidations`
 }
 
 type RecentlyUsedCache struct {
@@ -276,24 +277,6 @@ func simulate(params parameters) result {
 	return R
 }
 
-func dump(params parameters, res result) {
-	fmt.Printf("%d %g %d %g %d %v %d %d %s %d %d %d %d %d\n",
-		params.Operations,
-		params.ReadRatio,
-		params.Objects,
-		params.ZipfTheta,
-		params.Seed,
-		params.UseTLFU,
-		params.Memory,
-		params.Space,
-		params.Algorithm,
-		params.CacheSize,
-		res.Reads,
-		res.Hits,
-		res.Inserts,
-		res.Writes)
-}
-
 func main() {
 	params := parameters{
 		Operations: 4e6,
@@ -306,25 +289,18 @@ func main() {
 		Algorithm:  "LRU",
 		CacheSize:  1e6,
 	}
+	var results result
 
-	flag.Uint64Var(&params.Operations, "operations", params.Operations, "how many operations to run past the simulator")
-	flag.Float64Var(&params.ReadRatio, "read-ratio", params.ReadRatio, "the probability an operation is a read")
-	flag.Uint64Var(&params.Objects, "objects", params.Objects, "how many objects in the set of all cacheable elements")
-	flag.Float64Var(&params.ZipfTheta, "zipf-theta", params.ZipfTheta, "theta parameter for Zipf distribution")
-	flag.Uint64Var(&params.Seed, "avocado", params.Seed, "seed for this experiment")
-	flag.Uint64Var(&params.Memory, "memory", params.Memory, "how many operations TinyLFU should remember")
-	flag.Uint64Var(&params.Space, "space", params.Space, "how much space to allocate to TinyLFU")
-	flag.StringVar(&params.Algorithm, "algorithm", params.Algorithm, "cache eviction algorithm to use")
-	flag.Uint64Var(&params.CacheSize, "cache-size", params.CacheSize, "number of elements that fit in cache")
+	// setup
+	ubench.AddFlags(&params)
 	flag.Parse()
-
-	fmt.Printf("#Operations ReadRatio Objects ZipfTheta Seed UseTLFU Memory Space Algorithm CacheSize Reads Hits Inserts Writes\n")
-
-	var res result
-	params.UseTLFU = true
-	res = simulate(params)
-	dump(params, res)
+	ubench.PrintCommentString(params, results)
+	// run without tlfu
 	params.UseTLFU = false
-	res = simulate(params)
-	dump(params, res)
+	results = simulate(params)
+	ubench.PrintResultString(params, results)
+	// run with tlfu
+	params.UseTLFU = true
+	results = simulate(params)
+	ubench.PrintResultString(params, results)
 }

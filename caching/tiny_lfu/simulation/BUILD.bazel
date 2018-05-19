@@ -7,6 +7,7 @@ go_library(
     visibility = ["//visibility:private"],
     deps = [
         "//caching/tiny_lfu:go_default_library",
+        "//ubench:go_default_library",
         "@hack_systems_random//armnod:go_default_library",
         "@hack_systems_random//guacamole:go_default_library",
     ],
