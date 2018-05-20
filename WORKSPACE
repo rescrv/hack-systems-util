@@ -18,6 +18,12 @@ load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 gazelle_dependencies()
 
 go_repository(
+    name = "golang_org_x_sys",
+    importpath = "golang.org/x/sys",
+    commit = "7c87d13f8e835d2fb3a70a2912c811ed0c1d241b",
+)
+
+go_repository(
     name = "com_github_stretchr_testify",
     importpath = "github.com/stretchr/testify",
     commit = "12b6f73e6084dad08a7c6e575284b177ecafbc71",

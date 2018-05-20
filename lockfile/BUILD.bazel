@@ -1,0 +1,9 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["lockfile.go"],
+    importpath = "hack.systems/util/lockfile",
+    visibility = ["//visibility:public"],
+    deps = ["@golang_org_x_sys//unix:go_default_library"],
+)
